@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:stayhome/app.dart';
 import 'package:stayhome/util/clippsers.dart';
+import 'package:stayhome/util/models.dart';
+import 'package:stayhome/widget/alert_tile.dart';
+import 'package:stayhome/widget/country_stats.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -10,9 +12,9 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  Map<String, dynamic> get currentCountry => App.of(context).currentCountry;
+  Statistic get currentCountry => App.of(context).currentCountry;
 
-  set currentCountry(Map<String, dynamic> value) {
+  set currentCountry(Statistic value) {
     App.of(context).currentCountry = value;
   }
 
@@ -28,7 +30,7 @@ class _HomeScreenState extends State<HomeScreen> {
       child: Scaffold(
         body: RefreshIndicator(
           onRefresh: () async {
-            var newStats = await App.of(context).provider.statistics;
+            var newStats = await App.of(context).provider.lastStatistics;
             App.of(context).refreshStats(newStats);
             setState(() {});
           },
@@ -61,7 +63,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: <Widget>[
-                        Text(currentCountry['country']),
+                        Text(currentCountry.country),
                         Image.asset(
                           'assets/images/affected_location.png',
                           height: 25,
@@ -71,7 +73,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 ),
               ),
-              _CountryStats(stats: currentCountry),
+              CountryStats(stats: currentCountry),
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 24, vertical: 8),
                 child: Text(
@@ -80,7 +82,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   style: Theme.of(context).textTheme.headline,
                 ),
               ),
-              for (var item in App.of(context).symptoms) _AlertTile(item),
+              for (var item in App.of(context).symptoms) AlertTile(item),
             ],
           ),
         ),
@@ -126,146 +128,11 @@ class _HomeScreenState extends State<HomeScreen> {
     var stats = App.of(context).statistics[index];
     return ListTile(
       leading: CircleAvatar(child: Icon(Icons.flag)),
-      title: Text(stats['country']),
+      title: Text(stats.country),
       onTap: () {
         setState(() => currentCountry = stats);
         Navigator.pop(context);
       },
-    );
-  }
-}
-
-class _CountryStats extends StatelessWidget {
-  const _CountryStats({Key key, @required this.stats}) : super(key: key);
-
-  final Map<String, dynamic> stats;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      height: MediaQuery.of(context).size.height * 0.2,
-      decoration: BoxDecoration(
-        color: Colors.grey.shade200,
-        borderRadius: BorderRadius.circular(25),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: <Widget>[
-          _CasesWidget(
-            picture: 'case',
-            color: Theme.of(context).primaryColorDark.withRed(100),
-            name: 'Confirmés',
-            value: stats['cases']['total'],
-          ),
-          _CasesWidget(
-            picture: 'recovered',
-            color: Theme.of(context).primaryColorDark.withBlue(200),
-            name: 'guéries',
-            value: stats['cases']['recovered'],
-          ),
-          _CasesWidget(
-            picture: 'death',
-            color: Theme.of(context).primaryColorDark.withRed(200),
-            name: 'Décès',
-            value: stats['deaths']['total'],
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _AlertTile extends StatelessWidget {
-  final Map<String, String> alert;
-
-  const _AlertTile(this.alert, {Key key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      height: MediaQuery.of(context).size.height * 0.2,
-      decoration: BoxDecoration(
-        color: Colors.grey.shade200,
-        borderRadius: BorderRadius.circular(25),
-      ),
-      child: Row(
-        children: <Widget>[
-          Expanded(
-            child: ClipRRect(
-              borderRadius: BorderRadius.horizontal(left: Radius.circular(25)),
-              child: SizedBox.expand(
-                child: Image.asset(
-                  'assets/images/${alert['picture']}.png',
-                  fit: BoxFit.cover,
-                ),
-              ),
-            ),
-          ),
-          Expanded(
-            flex: 2,
-            child: Container(
-              child: Column(
-                children: <Widget>[],
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _CasesWidget extends StatelessWidget {
-  const _CasesWidget({Key key, this.color, this.name, this.value, this.picture})
-      : super(key: key);
-
-  final Color color;
-  final String name;
-  final value;
-  final String picture;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: <Widget>[
-          Flexible(
-            child: AspectRatio(
-              aspectRatio: 1 / 1,
-              child: SvgPicture.asset(
-                'assets/images/$picture.svg',
-                allowDrawingOutsideViewBox: false,
-                placeholderBuilder: (context) {
-                  return CircularProgressIndicator();
-                },
-              ),
-            ),
-          ),
-          Flexible(
-            child: Container(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: <Widget>[
-                  Container(
-                    child: Text(name),
-                  ),
-                  Container(
-                    child: Text(
-                      value.toString(),
-                      style: Theme.of(context).textTheme.title,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ],
-      ),
     );
   }
 }

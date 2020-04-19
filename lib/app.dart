@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/widgets.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:stayhome/data_provider.dart';
+import 'package:stayhome/util/models.dart';
 
 class App extends InheritedWidget {
   final SharedPreferences preferences;
@@ -12,13 +13,13 @@ class App extends InheritedWidget {
   App({this.statistics, this.provider, this.preferences, Widget child})
       : super(child: child);
 
-  Map<String, dynamic> get currentCountry {
+  Statistic get currentCountry {
     final rawData = preferences.getString('currentCountry');
     if (rawData == null) return statistics.first;
     return json.decode(rawData);
   }
 
-  set currentCountry(Map<String, dynamic> value) {
+  set currentCountry(Statistic value) {
     preferences.setString('currentCountry', json.encode(value));
   }
 
@@ -54,10 +55,10 @@ class App extends InheritedWidget {
     return context.dependOnInheritedWidgetOfExactType<App>();
   }
 
-  refreshStats(List value) {
+  refreshStats(List<Statistic> value) {
     statistics
       ..clear()
-      ..add(value);
+      ..addAll(value);
   }
 
   @override

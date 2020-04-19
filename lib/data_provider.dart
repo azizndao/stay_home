@@ -27,5 +27,12 @@ class DataProvider {
     return await fetchData('history?country=$country&day=$day');
   }
 
-  Future<List> get statistics async => await fetchData('statistics');
+  Future<List<Statistic>> get lastStatistics async {
+    final stats = <Statistic>[];
+    final resp = await fetchData('statistics');
+    for (var item in resp) {
+      stats.add(Statistic.parse(item as Map<String, dynamic>));
+    }
+    return stats;
+  }
 }
