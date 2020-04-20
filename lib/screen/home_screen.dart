@@ -1,6 +1,9 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:stayhome/app.dart';
+import 'package:stayhome/screen/webview_screen.dart';
+import 'package:stayhome/widget/app.dart';
 import 'package:stayhome/util/clippsers.dart';
 import 'package:stayhome/util/models.dart';
 import 'package:stayhome/widget/alert_tile.dart';
@@ -18,6 +21,12 @@ class _HomeScreenState extends State<HomeScreen> {
     App.of(context).currentCountry = value;
   }
 
+  Future<void> _refresh() async {
+    var newStats = await App.of(context).provider.lastStatistics;
+    App.of(context).refreshStats(newStats);
+    setState(() {});
+  }
+
   @override
   Widget build(BuildContext context) {
     return AnnotatedRegion(
@@ -29,11 +38,7 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       child: Scaffold(
         body: RefreshIndicator(
-          onRefresh: () async {
-            var newStats = await App.of(context).provider.lastStatistics;
-            App.of(context).refreshStats(newStats);
-            setState(() {});
-          },
+          onRefresh: _refresh,
           child: ListView(
             children: <Widget>[
               ClipPath(
@@ -49,10 +54,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ),
               Container(
-                margin: EdgeInsets.only(
-                  left: 16,
-                  right: 16,
-                ),
+                margin: EdgeInsets.only(left: 16, right: 16),
                 child: RawMaterialButton(
                   shape: StadiumBorder(),
                   fillColor: Colors.grey.shade200,
@@ -74,15 +76,24 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ),
               CountryStats(stats: currentCountry),
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 24, vertical: 8),
-                child: Text(
-                  'Les symptômes les plus communs sont: ‎',
-                  overflow: TextOverflow.ellipsis,
-                  style: Theme.of(context).textTheme.headline,
-                ),
+              SizedBox(height: 15),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: <Widget>[
+                  AlertTile(
+                    label: 'Les symptomes',
+                    picture: 'symptom3',
+                    url:
+                        'https://www.who.int/fr/emergencies/diseases/novel-coronavirus-2019/advice-for-public',
+                  ),
+                  AlertTile(
+                    picture: 'svg15',
+                    label: 'Les Conseilles',
+                    url:
+                        'https://www.who.int/fr/emergencies/diseases/novel-coronavirus-2019/advice-for-public/q-a-coronaviruses#:~:text=symptomes',
+                  ),
+                ],
               ),
-              for (var item in App.of(context).symptoms) AlertTile(item),
             ],
           ),
         ),
@@ -130,6 +141,7 @@ class _HomeScreenState extends State<HomeScreen> {
       leading: CircleAvatar(child: Icon(Icons.flag)),
       title: Text(stats.country),
       onTap: () {
+        print('object');
         setState(() => currentCountry = stats);
         Navigator.pop(context);
       },

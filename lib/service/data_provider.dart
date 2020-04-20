@@ -12,7 +12,6 @@ class DataProvider {
         "x-rapidapi-key": "506cb5d334msh345309840af411dp13fb48jsnde1587534d09",
       },
     );
-
     return (json.decode(resp.body) as Map<String, dynamic>)['response'] as List;
   }
 

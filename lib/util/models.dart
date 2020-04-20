@@ -34,7 +34,7 @@ class Statistic {
       totalCases: data['cases']['total'],
       newDeaths: convertToInt(data['deaths']['new']),
       totalDeaths: data['deaths']['total'],
-      recovereds: data['recorered'],
+      recovereds: data['cases']['recovered'],
       totalTests: data['tests']['total'],
       time: DateTime.parse(data['time']),
     );
@@ -45,3 +45,13 @@ class Statistic {
     return int.parse(value);
   }
 }
+
+class Alert {
+  final AlertType type;
+  final String label;
+  final String description;
+
+  const Alert(this.type, this.label, this.description);
+}
+
+enum AlertType { symptom, prevention }

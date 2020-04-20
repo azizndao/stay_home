@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:stayhome/data_provider.dart';
+import 'package:stayhome/service/data_provider.dart';
 import 'package:stayhome/screen/home_screen.dart';
-import 'package:stayhome/app.dart';
+import 'package:stayhome/widget/app.dart';
 import 'package:stayhome/widget/screen_loader.dart';
 
 void main() => runApp(MyApp());
@@ -41,10 +41,7 @@ class MyMaterialApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         primarySwatch: Colors.indigo,
-        appBarTheme: AppBarTheme(
-          elevation: 0,
-          brightness: Brightness.dark,
-        ),
+        appBarTheme: AppBarTheme(elevation: 0, brightness: Brightness.dark),
       ),
       home: HomeScreen(),
     );

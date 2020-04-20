@@ -22,19 +22,16 @@ class CountryStats extends StatelessWidget {
         children: <Widget>[
           CasesWidget(
             picture: 'case',
-            color: Theme.of(context).primaryColorDark.withRed(100),
             name: 'Confirmés',
             value: stats.totalCases,
           ),
           CasesWidget(
             picture: 'recovered',
-            color: Theme.of(context).primaryColorDark.withBlue(200),
             name: 'guéries',
             value: stats.recovereds,
           ),
           CasesWidget(
             picture: 'death',
-            color: Theme.of(context).primaryColorDark.withRed(200),
             name: 'Décès',
             value: stats.totalDeaths,
           ),
